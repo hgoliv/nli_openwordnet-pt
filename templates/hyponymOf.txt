@@ -1,0 +1,8 @@
+que tipos há de <Y>?
+que géneros há de <Y>?
+que espécies há de <Y>?
+que sub-classes há de <Y>?
+que especificações há de <Y>?
+que hipónimos tem <Y>?
+que subordinados tem <Y>?
+que formas há de <Y>?
