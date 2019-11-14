@@ -32,7 +32,7 @@ import org.deeplearning4j.text.tokenization.tokenizerfactory.TokenizerFactory;
 
 public class NLI_OWNPT {
 
-/*	private static String[] TEMPLATES_SYNONYM = {
+	/*	private static String[] TEMPLATES_SYNONYM = {
 			"sinónimos de <X>?",
 			"outras palavras para <X>?",
 			"mesmo significado que <X>?",
@@ -47,7 +47,7 @@ public class NLI_OWNPT {
 	static final String OP_TESTAR = "testar";
 	static final String OP_FIRST_SENSE = "psent";
 	static final String OP_PROP_TREINO = "ptreino";
-	
+
 	static final boolean DEFAULT_TESTAR = false;
 	static final boolean DEFAULT_REGERA_FRASES = false;
 	static final boolean DEFAULT_APENAS_FIRST_SENSE = false;
@@ -59,24 +59,24 @@ public class NLI_OWNPT {
 	static final String FILE_VECTORS = "vectors<?>.zip";
 	static final String FILE_FRASES = "frases.txt";
 
-	static final int PREVISOES = 3;
-	
+	static final int PREVISOES = 1;
+
 	private static String[] sources;
 	private static boolean testar;
 	private static boolean apenasFirstSense;
 	private static double propTreino;
-	
+
 	public static void main(String args[]) {
 
 		carregaOpcoes();
-		
+
 		QueryOWNPT ownpt = new QueryOWNPT(sources);
 		Set<String> vocabulario = ownpt.allLexicalForms();
 
 		boolean regeraFrases = DEFAULT_REGERA_FRASES || !(new File(FILE_FRASES).exists());
 		List<FraseLabel> frases = regeraFrases ? geraFrases(DIR_TEMPLATES, ownpt) : carregaFrases(FILE_FRASES);
 		System.out.println("\tHá "+frases.size()+" frases!");
-		
+
 		String fileVectors = FILE_VECTORS.replace("<?>", ("-"+propTreino).replace(".", ""));
 		ParagraphVectors pvec = carregaVetores(fileVectors);
 
@@ -114,24 +114,24 @@ public class NLI_OWNPT {
 			}
 		}
 	}
-	
+
 	private static void carregaOpcoes(){
-		
+
 		testar = DEFAULT_TESTAR;
 		apenasFirstSense = DEFAULT_APENAS_FIRST_SENSE;
 		propTreino = DEFAULT_PROP_TREINO;
 		String pathOWNPT = null;
 		String pathWNEN = null;
-		
+
 		Reader reader = null;
-		
+
 		try {
 			Properties props = new Properties();
- 
+
 			//InputStream inputStream = getClass().getClassLoader().getResourceAsStream(FILE_CONFIG);
 			reader = new FileReader(FILE_CONFIG);
 			props.load(reader);
-			
+
 			// get the property value and print it out
 			File f1 = new File(props.getProperty(OP_OWNPT));
 			if(f1.exists())
@@ -143,22 +143,22 @@ public class NLI_OWNPT {
 				pathWNEN = f2.getAbsolutePath();
 			else
 				System.err.println("Ficheiro não encontrado: "+f2);
-			
+
 			testar = props.getProperty(OP_TESTAR).equals("1");
 			apenasFirstSense = props.getProperty(OP_FIRST_SENSE).equals("1");
 			propTreino = Double.parseDouble(props.getProperty(OP_PROP_TREINO));
-			
+
 			reader.close();
- 
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		System.out.println("Testar ? "+testar);
-		System.out.println("First sense only ? "+apenasFirstSense);
+		System.out.println("Apenas primeiro sentido ? "+apenasFirstSense);
 		System.out.println("Propoção de treino = "+propTreino);
 		System.out.println("Ficheiros RDF = "+pathOWNPT+", "+pathWNEN);
-		
+
 		if(pathOWNPT == null || pathWNEN == null) {
 			System.err.println("Sem localização de OpenWordNet-PT ou WordNet-EN! Verificar "+FILE_CONFIG);
 			System.exit(0);
@@ -168,27 +168,27 @@ public class NLI_OWNPT {
 			sources = sourcesTmp;
 		}
 	}
-	
+
 	/*private static void carregaOpcoes(){
-		
+
 		testar = DEFAULT_TESTAR;
 		apenasFirstSense = DEFAULT_APENAS_FIRST_SENSE;
 		propTreino = DEFAULT_PROP_TREINO;
 		String pathOWNPT = null;
 		String pathWNEN = null;
-		
+
 		File config = new File(FILE_CONFIG);
 		if(config.exists()) {
-			
+
 			try {
 				BufferedReader reader = new BufferedReader(new FileReader(config));
 				String line = null;
-				
+
 				while((line = reader.readLine()) != null) {
-					
+
 					if(line.startsWith("#"))
 						continue;
-					
+
 					int i = line.indexOf("=")+1;
 					if(line.startsWith(OP_OWNPT)) {
 						File f = new File(line.substring(i));
@@ -214,9 +214,9 @@ public class NLI_OWNPT {
 						apenasFirstSense = line.substring(i, i+1).equals("1");
 					}
 				}
-				
+
 				reader.close();
-				
+
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -224,12 +224,12 @@ public class NLI_OWNPT {
 		} else {
 			System.err.println("Ficheiro "+FILE_CONFIG+" não encontrado: usar opções default.");
 		}
-		
+
 		System.out.println("Testar ? "+testar);
 		System.out.println("First sense only ? "+apenasFirstSense);
 		System.out.println("Propoção de treino = "+propTreino);
 		System.out.println("Ficheiros RDF = "+pathOWNPT+", "+pathWNEN);
-		
+
 		if(pathOWNPT == null || pathWNEN == null) {
 			System.err.println("Sem localização de OpenWordNet-PT ou WordNet-EN! Verificar config.txt");
 			System.exit(0);
@@ -239,9 +239,9 @@ public class NLI_OWNPT {
 			sources = sourcesTmp;
 		}
 	}*/
-	
+
 	private static Collection<String> preveTipoRelacao(ParagraphVectors pvec, String pergunta){
-		
+
 		//verificar se modelo conhece pelo menos uma token
 		Tokenizer tokenizer = pvec.getTokenizerFactory().create(pergunta);
 		boolean inclui = false;
@@ -250,10 +250,10 @@ public class NLI_OWNPT {
 				inclui = true;
 				break;
 			}
-		
+
 		if(inclui)
 			return new ArrayList<String>(pvec.predictSeveral(pergunta, PREVISOES));
-		
+
 		return null;
 	}
 
@@ -272,29 +272,30 @@ public class NLI_OWNPT {
 	}
 
 	private static Set<String> respostas(QueryOWNPT ownpt, Collection<String> vocabulario, ParagraphVectors pvec, String pergunta){
-		
+
 		//enviar pergunta em lower case?
 		Collection<String> tipoRel = preveTipoRelacao(pvec, pergunta.toLowerCase());
 		if(tipoRel == null) {
 			System.out.println("Quantidade insuficiente de texto conhecido!");
 			return null;
 		}
-		
+
 		return respostas(ownpt, vocabulario, pergunta, tipoRel); 
 	}
-	
+
 	private static Set<String> respostas(QueryOWNPT ownpt, Collection<String> vocabulario, String pergunta, Collection<String> tipoRel){
-		
+
 		String alvo = extraiAlvo(vocabulario, pergunta);
 		if(alvo == null)
 			return null;
-		
+
 		for(String tr : tipoRel) {
+			//System.out.println("Alvo: "+alvo+", Relação prevista: "+tr);
 			Set<String> respostas = respostas(ownpt, tr, alvo);
 			if(!respostas.isEmpty())
 				return respostas;
 		}
-		
+
 		return null;
 	}
 
@@ -346,28 +347,28 @@ public class NLI_OWNPT {
 	}
 
 	private static Map<String, Collection<String>> carregaTemplates(String dir){
-		
+
 		System.out.println("A carregar templates...");
 		Map<String, Collection<String>> mapaTemplatesNomeRel = new HashMap<>();
-		
+
 		File templatesDir = new File(dir);
-		
+
 		if(templatesDir.exists()) {
 			for(File f : templatesDir.listFiles()) {
 				String fname = f.getName().substring(0, f.getName().indexOf("."));
 				mapaTemplatesNomeRel.put(fname, new ArrayList<>());
-				
+
 				try {
 					BufferedReader reader = new BufferedReader(new FileReader(f));
-					
+
 					String line = null;
 					while((line = reader.readLine()) != null) {
-						
+
 						if(!line.isEmpty() && !line.startsWith("#") && (line.contains("<X>") || line.contains("<Y>"))) {
 							mapaTemplatesNomeRel.get(fname).add(line.trim());
 						}
 					}
-					
+
 					reader.close();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
@@ -375,14 +376,14 @@ public class NLI_OWNPT {
 				}
 			}
 		}
-		
+
 		System.out.println("\ttemplates para: "+mapaTemplatesNomeRel.keySet());
 		return mapaTemplatesNomeRel;
 	}
-	
+
 	private static List<FraseLabel> geraFrases(String dirTemplates, QueryOWNPT ownpt){
 
-/*		Map<String, Collection<String>> mapaTemplatesNomeRel = new HashMap<>();
+		/*		Map<String, Collection<String>> mapaTemplatesNomeRel = new HashMap<>();
 		//mapaTemplatesNomeRel.put(QueryOWNPT.KEY_SYNONYM, new ArrayList<>());
 		//mapaTemplatesNomeRel.put(QueryOWNPT.KEY_PART, new ArrayList<>());
 		//mapaTemplatesNomeRel.put(QueryOWNPT.KEY_WHOLE, new ArrayList<>());
@@ -424,7 +425,7 @@ public class NLI_OWNPT {
 
 		Map<String, Collection<String>> mapaTemplatesNomeRel = carregaTemplates(dirTemplates);
 		System.out.println("A gerar frases...");
-		
+
 		Set<FraseLabel> frases = new HashSet<>(); //sem perguntas duplicadas
 		for(String key : mapaTemplatesNomeRel.keySet()) {
 			Set<FraseLabel> tmp = geraFrasesTipo(ownpt, key, mapaTemplatesNomeRel);
@@ -479,12 +480,12 @@ public class NLI_OWNPT {
 		}
 		return frases;
 	}
-	
+
 	private static String uriTipoRelacao(String tipoRel) {
-		
+
 		if(Character.isLowerCase(tipoRel.charAt(0)))
 			return QueryOWNPT.TEMPLATE_PRED_RELATION.replace("?", tipoRel);
-		
+
 		return tipoRel;
 	}
 
@@ -522,12 +523,12 @@ public class NLI_OWNPT {
 			return new ArrayList<>(); //para não repetir os pares de CAUSES_X
 		}
 		else {
-		
+
 			String uriTipoRel = uriTipoRelacao(tipo);
 			//System.err.println(tipo+" -> "+uriTipoRel);
 			return ownpt.wordPairsRelatedBy(uriTipoRel);
 		}
-		
+
 	}
 
 	private static void guardaTextos(List<FraseLabel> frases) {
@@ -612,18 +613,19 @@ public class NLI_OWNPT {
 
 		return pvec;
 	}
-	
+
 	private static void testar(QueryOWNPT ownpt, Collection<String> vocabulario, List<FraseLabel> frases, ParagraphVectors pvec) {
-		
+
 		System.out.println("Testar...");
 		List<FraseLabel> teste = frases.subList((int)(frases.size()*propTreino), frases.size());
 		int respostasCertas = 0;
 		int tiposCertos = 0;
 		Map<String,List<Integer>> mapaRespostas = new HashMap<>();
-		
+		Map<String,Confusao> mapaRespostasC = new HashMap<>();
+
 		for(FraseLabel fl : teste) {
 			List<String> tipoRel = new ArrayList<String>(preveTipoRelacao(pvec, fl.pergunta));
-			
+
 			if(tipoRel.get(0).equals(fl.label)) {
 				tiposCertos++;
 			}
@@ -631,39 +633,87 @@ public class NLI_OWNPT {
 				System.err.println("Era="+fl.label+"; resposta="+tipoRel+" Pergunta="+fl.pergunta);
 			}*/
 
-			if(!mapaRespostas.containsKey(fl.label))
+			if(!mapaRespostas.containsKey(fl.label)) {
 				mapaRespostas.put(fl.label, new ArrayList<>());
-			
+				mapaRespostasC.put(fl.label, new Confusao());
+			}
+			if(!mapaRespostasC.containsKey(tipoRel.get(0))) {
+				mapaRespostasC.put(tipoRel.get(0), new Confusao());
+			}
+
 			Set<String> respostas = respostas(ownpt, vocabulario, fl.pergunta, tipoRel);
 			if(respostas != null && respostas.contains(fl.resposta)) {
 				respostasCertas++;
 				mapaRespostas.get(fl.label).add(1);
+				mapaRespostasC.get(fl.label).tp++;
 			}
 			//else if(tipoRel.contains(fl.label))
 			//	System.err.println(fl.pergunta+" -> "+alvo+" -> "+respostas);
-			else mapaRespostas.get(fl.label).add(0);
+			else {
+				mapaRespostas.get(fl.label).add(0);
+				
+				mapaRespostasC.get(fl.label).fn++;
+				mapaRespostasC.get(tipoRel.get(0)).fp++;
+			}
 
 		}
 		System.out.println("Tipos certos: "+tiposCertos+" -> "+ (double)tiposCertos/teste.size());
 		System.out.println("Respostas certas: "+respostasCertas+" -> "+ (double)respostasCertas/teste.size());
-		
+
 		for(String label : mapaRespostas.keySet()) {
-			
+
 			float certas = contaCertas(mapaRespostas.get(label));
 			float propCertas = certas / mapaRespostas.get(label).size();
 			
 			System.out.println("\t"+label+":\t"+certas+" ("+propCertas+")");
 		}
+		printPA(mapaRespostasC);
 	}
-	
-	
+
+
 	private static int contaCertas(Collection<Integer> numeros) {
 		/*int total = 0;
 		for(Integer i : numeros)
 			if(i > 0) total++;
 		return total;*/
-		
+
 		return numeros.stream().mapToInt(Integer::intValue).sum();
+	}
+	
+	/** Precision and recall data **/
+	private static void printPA(Map<String, Confusao> mapa) {
+		
+		System.out.println("Outras métricas:");
+		int somaTp = 0;
+		double[] numMacro = new double[2]; //p, a
+		double[] denMicro = new double[2];
+		
+		for(String label : mapa.keySet()) {
+			
+			float prec = ((float) mapa.get(label).tp) / (mapa.get(label).tp + mapa.get(label).fp);
+			float abr = ((float) mapa.get(label).tp) / (mapa.get(label).tp + mapa.get(label).fn);
+			float f1 = 2 * prec * abr / (prec + abr);
+			
+			System.out.println("\t"+label+":\tP="+prec+"\tA="+abr+"\tF1="+f1);
+			
+			numMacro[0] += prec;
+			numMacro[1] += abr;
+			
+			somaTp += mapa.get(label).tp;
+			denMicro[0] += (mapa.get(label).tp + mapa.get(label).fp);
+			denMicro[1] += (mapa.get(label).tp + mapa.get(label).fn);
+		}
+		
+		double microP = somaTp / denMicro[0];
+		double microA = somaTp / denMicro[1];
+		double microF = 2 * (microP * microA) / (microP + microA);
+		System.out.println("Micro-Avg:\tP="+microP+"\tA="+microA+"\tF1="+microF);
+		
+		double n = (double)mapa.size();
+		double macroP = numMacro[0] / n;
+		double macroA = numMacro[0] / n;
+		double macroF = 2 * (macroP * macroA) / (macroP + macroA);
+		System.out.println("Macro-Avg:\tP="+macroP+"\tA="+macroA+"\tF1="+macroF);
 	}
 }
 
@@ -724,4 +774,10 @@ class FraseLabel {
 		return true;
 	}
 
+}
+
+class Confusao{
+	int tp = 0;
+	int fp = 0;
+	int fn = 0;
 }

@@ -71,6 +71,8 @@ public class QueryOWNPT {
 		boolean firstSense = false;
 
 		ownpt.fixLexicalFormsWithExtraSpaces();
+		
+		System.out.println(ownpt.hyponymsOfWord("lugar", firstSense));
 
 		/*String queryString = "SELECT ?s WHERE {"
 				+ "?s <https://w3id.org/own-pt/wn30/schema/containsWordSense> ?ws"
@@ -88,7 +90,7 @@ public class QueryOWNPT {
 		//Set<String> lexicalForms = ownpt.allLexicalForms();
 		//ownpt.saveMapLemmasSenses("lemas_sentidos.csv");
 		
-		String query = "SELECT ?lf WHERE {"
+		/*String query = "SELECT ?lf WHERE {"
 				+ "?s1 <https://w3id.org/own-pt/wn30/schema/containsWordSense> ?ws1 . "
 				+ "?ws1 <https://w3id.org/own-pt/wn30/schema/word> ?w1 . "
 				+ "?w1 <https://w3id.org/own-pt/wn30/schema/lexicalForm> \"correr\"@pt . "
@@ -98,7 +100,7 @@ public class QueryOWNPT {
 				+ "?s2 <https://w3id.org/own-pt/wn30/schema/containsWordSense> ?ws2 . "
 				+ "?ws2 <https://w3id.org/own-pt/wn30/schema/word> ?w2 . "
 				+ "?w2 <https://w3id.org/own-pt/wn30/schema/lexicalForm> ?lf}";
-		ownpt.executeQuery(query);
+		ownpt.executeQuery(query);*/
 		
 		/*System.out.println(lexicalForms.size());
 		System.out.println(lexicalForms.subList(0, 100));
