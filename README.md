@@ -6,7 +6,6 @@ Natural Language Interface for <a href="https://github.com/own-pt/openWordnet-PT
 Developed by <a href="https://eden.dei.uc.pt/~hroliv">Hugo Gonçalo Oliveira</a>, with the support of <a href="http://arademaker.github.io/">Alexandre Rademaker</a>.
 
 If you use this code, please cite it. Here is a Bibtex reference:
-
 <pre>
 @inproceedings{goncalo-oliveira_rademaker:gwc2019,
 	Address = {Wroclaw, Poland},
